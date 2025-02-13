@@ -93,21 +93,26 @@ def depthFirstSearch(problem: SearchProblem) -> List[Directions]:
     seen, path, stack = set(), [], util.Stack()
 
     start_row, start_col = problem.getStartState()
-    stack.push((start_row, start_col, Directions.NORTH))
+    stack.push((start_row, start_col, Directions.EAST))
 
     while not stack.isEmpty():
         r, c, direction = stack.pop()
         if (r, c) in seen:
-            return []
+            if path:
+                path.pop()
+            continue
         if problem.isGoalState((r, c)):
-            return path
-        path.append(direction)
-        for successorTuple in problem.getSuccessors((r, c)):
-            newPosition, action, _ = successorTuple
-            new_row, new_col = newPosition
-            stack.push((new_row, new_col))
+            break
 
-    return path
+        seen.add((r, c))
+        path.append(direction)
+
+        for successor_tuple in problem.getSuccessors((r, c)):
+            new_position, new_direction, _ = successor_tuple
+            stack.push((new_position[0], new_position[1], new_direction))
+
+    print(path)
+    return []
 
 def breadthFirstSearch(problem: SearchProblem) -> List[Directions]:
     """Search the shallowest nodes in the search tree first."""
