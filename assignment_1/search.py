@@ -90,7 +90,24 @@ def depthFirstSearch(problem: SearchProblem) -> List[Directions]:
     print("Start's successors:", problem.getSuccessors(problem.getStartState()))
     """
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    seen, path, stack = set(), [], util.Stack()
+
+    start_row, start_col = problem.getStartState()
+    stack.push((start_row, start_col, Directions.NORTH))
+
+    while not stack.isEmpty():
+        r, c, direction = stack.pop()
+        if (r, c) in seen:
+            return []
+        if problem.isGoalState((r, c)):
+            return path
+        path.append(direction)
+        for successorTuple in problem.getSuccessors((r, c)):
+            newPosition, action, _ = successorTuple
+            new_row, new_col = newPosition
+            stack.push((new_row, new_col))
+
+    return path
 
 def breadthFirstSearch(problem: SearchProblem) -> List[Directions]:
     """Search the shallowest nodes in the search tree first."""
