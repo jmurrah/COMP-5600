@@ -91,9 +91,7 @@ def depthFirstSearch(problem: SearchProblem) -> List[Directions]:
     """
     "*** YOUR CODE HERE ***"
     seen, stack = set(), util.Stack()
-
-    start_state = problem.getStartState()
-    stack.push((start_state, []))
+    stack.push((problem.getStartState(), []))
 
     while not stack.isEmpty():
         state, path = stack.pop()
