@@ -4,7 +4,7 @@
 # educational purposes provided that (1) you do not distribute or publish
 # solutions, (2) you retain this notice, and (3) you provide clear
 # attribution to UC Berkeley, including a link to http://ai.berkeley.edu.
-# 
+#
 # Attribution Information: The Pacman AI projects were developed at UC Berkeley.
 # The core projects and autograders were primarily created by John DeNero
 # (denero@cs.berkeley.edu) and Dan Klein (klein@cs.berkeley.edu).
@@ -20,6 +20,7 @@ Pacman agents (in searchAgents.py).
 import util
 from game import Directions
 from typing import List
+
 
 class SearchProblem:
     """
@@ -64,8 +65,6 @@ class SearchProblem:
         util.raiseNotDefined()
 
 
-
-
 def tinyMazeSearch(problem: SearchProblem) -> List[Directions]:
     """
     Returns a sequence of moves that solves tinyMaze.  For any other maze, the
@@ -73,7 +72,8 @@ def tinyMazeSearch(problem: SearchProblem) -> List[Directions]:
     """
     s = Directions.SOUTH
     w = Directions.WEST
-    return  [s, s, w, s, w, w, s, w]
+    return [s, s, w, s, w, w, s, w]
+
 
 def depthFirstSearch(problem: SearchProblem) -> List[Directions]:
     """
@@ -109,6 +109,7 @@ def depthFirstSearch(problem: SearchProblem) -> List[Directions]:
     print("Goal NOT found!")
     return []
 
+
 def breadthFirstSearch(problem: SearchProblem) -> List[Directions]:
     """Search the shallowest nodes in the search tree first."""
     "*** YOUR CODE HERE ***"
@@ -132,6 +133,7 @@ def breadthFirstSearch(problem: SearchProblem) -> List[Directions]:
     print("Goal NOT found!")
     return []
 
+
 def uniformCostSearch(problem: SearchProblem) -> List[Directions]:
     """Search the node of least total cost first."""
     "*** YOUR CODE HERE ***"
@@ -149,10 +151,13 @@ def uniformCostSearch(problem: SearchProblem) -> List[Directions]:
         seen.add(state)
         for successor_tuple in problem.getSuccessors(state):
             new_state, new_direction, new_cost = successor_tuple
-            priority_deque.push((new_state, path + [new_direction], cost + new_cost), cost + new_cost)
+            priority_deque.push(
+                (new_state, path + [new_direction], cost + new_cost), cost + new_cost
+            )
 
     print("Goal NOT found!")
     return []
+
 
 def nullHeuristic(state, problem=None) -> float:
     """
@@ -161,10 +166,37 @@ def nullHeuristic(state, problem=None) -> float:
     """
     return 0
 
+
 def aStarSearch(problem: SearchProblem, heuristic=nullHeuristic) -> List[Directions]:
     """Search the node that has the lowest combined cost and heuristic first."""
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    optimal, priority_deque = {}, util.PriorityQueue()
+
+    start_state = problem.getStartState()
+    heur_val = heuristic(start_state, problem)
+    priority_deque.push((start_state, [], 0, heur_val), heur_val)
+
+    while not priority_deque.isEmpty():
+        state, path, cost, heur_val = priority_deque.pop()
+        if optimal.get(state, float("inf")) <= cost + heur_val:
+            continue
+        if problem.isGoalState(state):
+            print("Length: ", len(path))
+            return path
+
+        optimal[state] = cost + heur_val
+        for successor_tuple in problem.getSuccessors(state):
+            new_state, new_direction, new_cost = successor_tuple
+            new_cost += cost
+            new_heur_val = heuristic(new_state, problem)
+            priority_deque.push(
+                (new_state, path + [new_direction], new_cost, new_cost + new_heur_val),
+                new_cost + new_heur_val,
+            )
+
+    print("Goal NOT found!")
+    return []
+
 
 # Abbreviations
 bfs = breadthFirstSearch
