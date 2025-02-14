@@ -174,24 +174,22 @@ def aStarSearch(problem: SearchProblem, heuristic=nullHeuristic) -> List[Directi
 
     start_state = problem.getStartState()
     heur_val = heuristic(start_state, problem)
-    priority_deque.push((start_state, [], 0, heur_val), heur_val)
+    priority_deque.push((start_state, [], 0), heur_val)
 
     while not priority_deque.isEmpty():
-        state, path, cost, heur_val = priority_deque.pop()
-        if optimal.get(state, float("inf")) <= cost + heur_val:
+        state, path, cost = priority_deque.pop()
+        if optimal.get(state, float("inf")) <= cost:
             continue
         if problem.isGoalState(state):
             print("Length: ", len(path))
             return path
 
-        optimal[state] = cost + heur_val
+        optimal[state] = cost
         for successor_tuple in problem.getSuccessors(state):
             new_state, new_direction, new_cost = successor_tuple
-            new_cost += cost
-            new_heur_val = heuristic(new_state, problem)
             priority_deque.push(
-                (new_state, path + [new_direction], new_cost, new_cost + new_heur_val),
-                new_cost + new_heur_val,
+                (new_state, path + [new_direction], cost + new_cost),
+                cost + new_cost + heuristic(new_state, problem),
             )
 
     print("Goal NOT found!")
