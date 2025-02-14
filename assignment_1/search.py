@@ -112,7 +112,25 @@ def depthFirstSearch(problem: SearchProblem) -> List[Directions]:
 def breadthFirstSearch(problem: SearchProblem) -> List[Directions]:
     """Search the shallowest nodes in the search tree first."""
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    seen, deque = set(), util.Queue()
+    print(problem.getStartState())
+    deque.push((problem.getStartState(), []))
+
+    while not deque.isEmpty():
+        state, path = deque.pop()
+        if state in seen:
+            continue
+        if problem.isGoalState(state):
+            print("Length: ", len(path))
+            return path
+
+        seen.add(state)
+        for successor_tuple in problem.getSuccessors(state):
+            new_state, new_direction, _ = successor_tuple
+            deque.push((new_state, path + [new_direction]))
+
+    print("Goal NOT found!")
+    return []
 
 def uniformCostSearch(problem: SearchProblem) -> List[Directions]:
     """Search the node of least total cost first."""
