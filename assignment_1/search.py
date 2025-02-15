@@ -119,6 +119,7 @@ def breadthFirstSearch(problem: SearchProblem) -> List[Directions]:
 
     while not deque.isEmpty():
         state, path = deque.pop()
+        print(state)
         if state in seen:
             continue
         if problem.isGoalState(state):
