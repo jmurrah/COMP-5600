@@ -98,7 +98,6 @@ def depthFirstSearch(problem: SearchProblem) -> List[Directions]:
         if state in seen:
             continue
         if problem.isGoalState(state):
-            print("Length: ", len(path))
             return path
 
         seen.add(state)
@@ -106,7 +105,6 @@ def depthFirstSearch(problem: SearchProblem) -> List[Directions]:
             new_state, new_direction, _ = successor_tuple
             stack.push((new_state, path + [new_direction]))
 
-    print("Goal NOT found!")
     return []
 
 
@@ -114,16 +112,13 @@ def breadthFirstSearch(problem: SearchProblem) -> List[Directions]:
     """Search the shallowest nodes in the search tree first."""
     "*** YOUR CODE HERE ***"
     seen, deque = set(), util.Queue()
-    print(problem.getStartState())
     deque.push((problem.getStartState(), []))
 
     while not deque.isEmpty():
         state, path = deque.pop()
-        print(state)
         if state in seen:
             continue
         if problem.isGoalState(state):
-            print("Length: ", len(path))
             return path
 
         seen.add(state)
@@ -131,7 +126,6 @@ def breadthFirstSearch(problem: SearchProblem) -> List[Directions]:
             new_state, new_direction, _ = successor_tuple
             deque.push((new_state, path + [new_direction]))
 
-    print("Goal NOT found!")
     return []
 
 
@@ -146,7 +140,6 @@ def uniformCostSearch(problem: SearchProblem) -> List[Directions]:
         if state in seen:
             continue
         if problem.isGoalState(state):
-            print("Length: ", len(path))
             return path
 
         seen.add(state)
@@ -156,7 +149,6 @@ def uniformCostSearch(problem: SearchProblem) -> List[Directions]:
                 (new_state, path + [new_direction], cost + new_cost), cost + new_cost
             )
 
-    print("Goal NOT found!")
     return []
 
 
@@ -182,7 +174,6 @@ def aStarSearch(problem: SearchProblem, heuristic=nullHeuristic) -> List[Directi
         if optimal.get(state, float("inf")) <= cost:
             continue
         if problem.isGoalState(state):
-            print("Length: ", len(path))
             return path
 
         optimal[state] = cost
@@ -193,7 +184,6 @@ def aStarSearch(problem: SearchProblem, heuristic=nullHeuristic) -> List[Directi
                 cost + new_cost + heuristic(new_state, problem),
             )
 
-    print("Goal NOT found!")
     return []
 
 

@@ -337,6 +337,7 @@ class CornersProblem(search.SearchProblem):
             if not startingGameState.hasFood(*corner):
                 print("Warning: no food in corner " + str(corner))
         self._expanded = 0  # DO NOT CHANGE; Number of search nodes expanded
+        self.startingGameState = startingGameState
 
     def getStartState(self):
         """
@@ -385,6 +386,7 @@ class CornersProblem(search.SearchProblem):
             x, y = position
             dx, dy = Actions.directionToVector(action)
             nextx, nexty = int(x + dx), int(y + dy)
+
             if not self.walls[nextx][nexty]:
                 new_visited_corners = list(visited_corners)
                 if (nextx, nexty) in self.corners and (
@@ -432,7 +434,16 @@ def cornersHeuristic(state: Any, problem: CornersProblem):
     walls = problem.walls  # These are the walls of the maze, as a Grid (game.py)
 
     "*** YOUR CODE HERE ***"
-    return 0  # Default to trivial solution
+    # Go to the farthest corner that is not visited
+    position, visited_corners = state
+    farthest_corner = (0, (-1, -1))
+
+    for corner in set(corners) - set(visited_corners):
+        distance = mazeDistance(position, corner, problem.startingGameState)
+        if distance > farthest_corner[0]:
+            farthest_corner = (distance, corner)
+
+    return farthest_corner[0]
 
 
 class AStarCornersAgent(SearchAgent):
