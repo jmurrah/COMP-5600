@@ -547,6 +547,14 @@ def foodHeuristic(state: Tuple[Tuple, List[List]], problem: FoodSearchProblem):
     """
     position, foodGrid = state
     "*** YOUR CODE HERE ***"
+    # Let's go to the nearest food position
+    print(position)
+    print(foodGrid.asList())
+
+    for successor_tuple in problem.getSuccessors(state):
+        new_state, new_direction, new_cost = successor_tuple
+        new_position, newFoodGrid = new_state
+        pass
     return 0
 
 
