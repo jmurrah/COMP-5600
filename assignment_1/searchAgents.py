@@ -592,13 +592,12 @@ class ClosestDotSearchAgent(SearchAgent):
         "*** YOUR CODE HERE ***"
         closest_food = (float("inf"), (-1, -1))
         for food_position in food.asList():
-            distance = mazeDistance(startPosition, food_position, startPosition)
+            distance = mazeDistance(startPosition, food_position, gameState)
             if distance < closest_food[0]:
                 closest_food = (distance, food_position)
-            
-        func = getattr(search, "breadthFirstSearch")
 
-        return []
+        problem.goal = closest_food[1]
+        return search.breadthFirstSearch(problem)
 
 
 class AnyFoodSearchProblem(PositionSearchProblem):
@@ -635,7 +634,7 @@ class AnyFoodSearchProblem(PositionSearchProblem):
         x, y = state
 
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        return state == self.goal
 
 
 def mazeDistance(
