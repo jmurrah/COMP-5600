@@ -434,7 +434,6 @@ def cornersHeuristic(state: Any, problem: CornersProblem):
     walls = problem.walls  # These are the walls of the maze, as a Grid (game.py)
 
     "*** YOUR CODE HERE ***"
-    # Go to the farthest corner that is not visited
     position, visited_corners = state
     farthest_corner = (0, (-1, -1))
 
@@ -547,15 +546,14 @@ def foodHeuristic(state: Tuple[Tuple, List[List]], problem: FoodSearchProblem):
     """
     position, foodGrid = state
     "*** YOUR CODE HERE ***"
-    # Let's go to the nearest food position
-    print(position)
-    print(foodGrid.asList())
+    max_distance = 0
+    for food_position in foodGrid.asList():
+        max_distance = max(
+            max_distance,
+            mazeDistance(position, food_position, problem.startingGameState),
+        )
 
-    for successor_tuple in problem.getSuccessors(state):
-        new_state, new_direction, new_cost = successor_tuple
-        new_position, newFoodGrid = new_state
-        pass
-    return 0
+    return max_distance
 
 
 class ClosestDotSearchAgent(SearchAgent):
