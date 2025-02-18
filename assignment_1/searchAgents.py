@@ -387,16 +387,17 @@ class CornersProblem(search.SearchProblem):
             dx, dy = Actions.directionToVector(action)
             nextx, nexty = int(x + dx), int(y + dy)
 
-            if not self.walls[nextx][nexty]:
-                new_visited_corners = list(visited_corners)
-                if (nextx, nexty) in self.corners and (
-                    nextx,
-                    nexty,
-                ) not in visited_corners:
-                    new_visited_corners.append((nextx, nexty))
-                successors.append(
-                    (((nextx, nexty), tuple(new_visited_corners)), action, 1)
-                )
+            if self.walls[nextx][nexty]:
+                continue
+
+            new_visited_corners = list(visited_corners)
+            if (nextx, nexty) in self.corners and (
+                nextx,
+                nexty,
+            ) not in visited_corners:
+                new_visited_corners.append((nextx, nexty))
+
+            successors.append((((nextx, nexty), tuple(new_visited_corners)), action, 1))
 
         self._expanded += 1  # DO NOT CHANGE
         return successors

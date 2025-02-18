@@ -144,9 +144,9 @@ def uniformCostSearch(problem: SearchProblem) -> List[Directions]:
 
         seen.add(state)
         for successor_tuple in problem.getSuccessors(state):
-            new_state, new_direction, new_cost = successor_tuple
+            new_state, new_direction, step_cost = successor_tuple
             priority_deque.push(
-                (new_state, path + [new_direction], cost + new_cost), cost + new_cost
+                (new_state, path + [new_direction], cost + step_cost), cost + step_cost
             )
 
     return []
@@ -164,10 +164,8 @@ def aStarSearch(problem: SearchProblem, heuristic=nullHeuristic) -> List[Directi
     """Search the node that has the lowest combined cost and heuristic first."""
     "*** YOUR CODE HERE ***"
     optimal, priority_deque = {}, util.PriorityQueue()
-
     start_state = problem.getStartState()
-    heur_val = heuristic(start_state, problem)
-    priority_deque.push((start_state, [], 0), heur_val)
+    priority_deque.push((start_state, [], 0), heuristic(start_state, problem))
 
     while not priority_deque.isEmpty():
         state, path, cost = priority_deque.pop()
@@ -178,10 +176,10 @@ def aStarSearch(problem: SearchProblem, heuristic=nullHeuristic) -> List[Directi
 
         optimal[state] = cost
         for successor_tuple in problem.getSuccessors(state):
-            new_state, new_direction, new_cost = successor_tuple
+            new_state, new_direction, step_cost = successor_tuple
             priority_deque.push(
-                (new_state, path + [new_direction], cost + new_cost),
-                cost + new_cost + heuristic(new_state, problem),
+                (new_state, path + [new_direction], cost + step_cost),
+                cost + step_cost + heuristic(new_state, problem),
             )
 
     return []
