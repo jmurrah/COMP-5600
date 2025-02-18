@@ -436,14 +436,13 @@ def cornersHeuristic(state: Any, problem: CornersProblem):
 
     "*** YOUR CODE HERE ***"
     position, visited_corners = state
-    farthest_corner = (0, (-1, -1))
-
-    for corner in set(corners) - set(visited_corners):
-        distance = mazeDistance(position, corner, problem.startingGameState)
-        if distance > farthest_corner[0]:
-            farthest_corner = (distance, corner)
-
-    return farthest_corner[0]
+    return max(
+        [
+            mazeDistance(position, corner, problem.startingGameState)
+            for corner in set(corners) - set(visited_corners)
+        ]
+        or [0]
+    )
 
 
 class AStarCornersAgent(SearchAgent):
