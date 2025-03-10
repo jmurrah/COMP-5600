@@ -81,7 +81,7 @@ class ReflexAgent(Agent):
         min_food_dist = min(
             [manhattanDistance(newPos, foodPos) for foodPos in newFood.asList()] or [0]
         )
-        food_score = 1.0 / (min_food_dist + 1)
+        food_score = 1.0 / (min_food_dist + 1) * 10
 
         min_ghost = min(
             [
@@ -98,9 +98,8 @@ class ReflexAgent(Agent):
         if min_ghost_dist < 5 and min_ghost_timer == 0:
             ghost_score -= 500
         elif min_ghost_timer > 0:
-            ghost_score = 200 / (min_ghost_dist + 1)
+            ghost_score = 500 / (min_ghost_dist + 1)
 
-        print(new_score, food_score, ghost_score)
         return new_score + food_score + ghost_score
 
 
