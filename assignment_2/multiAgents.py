@@ -213,7 +213,58 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
         Returns the minimax action using self.depth and self.evaluationFunction
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+
+        def minimax(game_state, depth, agent_index, alpha, beta):
+            if depth == 0 or game_state.isWin() or game_state.isLose():
+                return self.evaluationFunction(game_state)
+
+            legal_actions = game_state.getLegalActions(agent_index)
+            if agent_index == 0:  # index 0 -> PacMan player
+                max_score = float("-inf")
+                for action in legal_actions:
+                    new_game_state = game_state.generateSuccessor(0, action)
+                    curr_score = minimax(new_game_state, depth, 1, alpha, beta)
+                    max_score = max(max_score, curr_score)
+
+                    if max_score > beta:
+                        return max_score
+
+                    alpha = max(alpha, max_score)
+
+                return max_score
+
+            min_score, num_agents = float("inf"), game_state.getNumAgents()
+            for action in legal_actions:
+                new_game_state = game_state.generateSuccessor(agent_index, action)
+                curr_score = (
+                    minimax(new_game_state, depth, agent_index + 1, alpha, beta)
+                    if agent_index != num_agents - 1
+                    else minimax(new_game_state, depth - 1, 0, alpha, beta)
+                )
+                min_score = min(min_score, curr_score)
+
+                if min_score < alpha:
+                    return min_score
+
+                beta = min(beta, min_score)
+
+            return min_score
+
+        # since minimax returns a number we need the below to find the associated action
+        max_score, max_action = float("-inf"), None
+        alpha, beta = float("-inf"), float("inf")
+
+        for action in gameState.getLegalActions(0):
+            new_game_state = gameState.generateSuccessor(0, action)
+            curr_score = minimax(new_game_state, self.depth, 1, alpha, beta)
+
+            if curr_score > max_score:
+                max_score = curr_score
+                max_action = action
+
+            alpha = max(alpha, max_score)
+
+        return max_action
 
 
 class ExpectimaxAgent(MultiAgentSearchAgent):
