@@ -280,7 +280,43 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
         legal moves.
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+
+        def expectimax(game_state, depth, agent_index):
+            if depth == 0 or game_state.isWin() or game_state.isLose():
+                return self.evaluationFunction(game_state)
+
+            legal_actions = game_state.getLegalActions(agent_index)
+            if agent_index == 0:  # index 0 -> PacMan player
+                max_score = float("-inf")
+                for action in legal_actions:
+                    new_game_state = game_state.generateSuccessor(0, action)
+                    curr_score = expectimax(new_game_state, depth, 1)
+                    max_score = max(max_score, curr_score)
+
+                return max_score
+
+            exp_score, num_agents = 0, game_state.getNumAgents()
+            for action in legal_actions:
+                new_game_state = game_state.generateSuccessor(agent_index, action)
+                curr_score = (
+                    expectimax(new_game_state, depth, agent_index + 1)
+                    if agent_index != num_agents - 1
+                    else expectimax(new_game_state, depth - 1, 0)
+                )
+                exp_score += curr_score * 1 / len(legal_actions)
+
+            return exp_score
+
+        # since expectimax returns a number we need the below to find the associated action
+        max_score, max_action = float("-inf"), None
+        for action in gameState.getLegalActions(0):
+            new_game_state = gameState.generateSuccessor(0, action)
+            curr_score = expectimax(new_game_state, self.depth, 1)
+            if curr_score > max_score:
+                max_score = curr_score
+                max_action = action
+
+        return max_action
 
 
 def betterEvaluationFunction(currentGameState: GameState):
