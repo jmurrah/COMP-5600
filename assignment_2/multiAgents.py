@@ -324,7 +324,30 @@ def betterEvaluationFunction(currentGameState: GameState):
     Your extreme ghost-hunting, pellet-nabbing, food-gobbling, unstoppable
     evaluation function (question 5).
 
-    DESCRIPTION: <write something here so we know what you did>
+    DESCRIPTION:
+    I created an evaluation function that considers the current game score,
+    a calculated food score, and a calculated ghost score. The evaluation function
+    also considers whether or not a game is lost or won.
+
+    The base conditions check if the game is won or lost. If the game is won we
+    return a super large number to make sure we always choose that game state. If
+    the game state is a lose we return a super small number to make sure we never
+    choose that game state.
+
+    The food score is determined by the nearest food to the current PacMan position.
+    I used the reciprocal to make shorter distances create a larger score. I also
+    multiplied the food score by 10 in order to make it proportional with the game
+    score and ghost scores.
+
+    The ghost score is determined by the distance to the nearest ghost as well as
+    whether or not the ghost is scared. If the ghost is NOT scared we need to run
+    away but only if the ghost is really close. If the ghost is far away we can just
+    ignore it when it is NOT scared. If the ghost is SCARED we want to chase it to
+    get more points! The logic to increase the SCARED ghost score uses the reciprocal
+    to make shorter distances provide higher scores.
+
+    Overall we prioritize higher scores by going after food and scared ghosts while
+    making sure we always run from ghosts that are NOT scared.
     """
     "*** YOUR CODE HERE ***"
     if currentGameState.isWin():
