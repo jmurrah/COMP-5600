@@ -81,7 +81,7 @@ class ReflexAgent(Agent):
         min_food_dist = min(
             [manhattanDistance(newPos, foodPos) for foodPos in newFood.asList()] or [0]
         )
-        food_score = 1.0 / (min_food_dist + 1) * 10
+        food_score = 10 / (min_food_dist + 1)
 
         min_ghost = min(
             [
@@ -363,7 +363,7 @@ def betterEvaluationFunction(currentGameState: GameState):
     min_food_dist = min(
         [manhattanDistance(pacman_pos, foodPos) for foodPos in food.asList()] or [0]
     )
-    food_score = 1.0 / (min_food_dist + 1) * 10
+    food_score = 10 / (min_food_dist + 1)
 
     min_ghost = min(
         [
