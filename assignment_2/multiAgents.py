@@ -214,7 +214,7 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
         """
         "*** YOUR CODE HERE ***"
 
-        def minimax(game_state, depth, agent_index, alpha, beta):
+        def alphabeta(game_state, depth, agent_index, alpha, beta):
             if depth == 0 or game_state.isWin() or game_state.isLose():
                 return self.evaluationFunction(game_state)
 
@@ -223,7 +223,7 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
                 max_score = float("-inf")
                 for action in legal_actions:
                     new_game_state = game_state.generateSuccessor(0, action)
-                    curr_score = minimax(new_game_state, depth, 1, alpha, beta)
+                    curr_score = alphabeta(new_game_state, depth, 1, alpha, beta)
                     max_score = max(max_score, curr_score)
 
                     if max_score > beta:
@@ -237,9 +237,9 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
             for action in legal_actions:
                 new_game_state = game_state.generateSuccessor(agent_index, action)
                 curr_score = (
-                    minimax(new_game_state, depth, agent_index + 1, alpha, beta)
+                    alphabeta(new_game_state, depth, agent_index + 1, alpha, beta)
                     if agent_index != num_agents - 1
-                    else minimax(new_game_state, depth - 1, 0, alpha, beta)
+                    else alphabeta(new_game_state, depth - 1, 0, alpha, beta)
                 )
                 min_score = min(min_score, curr_score)
 
@@ -256,7 +256,7 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
 
         for action in gameState.getLegalActions(0):
             new_game_state = gameState.generateSuccessor(0, action)
-            curr_score = minimax(new_game_state, self.depth, 1, alpha, beta)
+            curr_score = alphabeta(new_game_state, self.depth, 1, alpha, beta)
 
             if curr_score > max_score:
                 max_score = curr_score
