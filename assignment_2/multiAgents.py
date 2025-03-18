@@ -303,7 +303,7 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
                     if agent_index != num_agents - 1
                     else expectimax(new_game_state, depth - 1, 0)
                 )
-                exp_score += curr_score * 1 / len(legal_actions)
+                exp_score += curr_score / len(legal_actions)
 
             return exp_score
 
