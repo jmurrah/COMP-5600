@@ -66,18 +66,11 @@ def constructBayesNet(gameState: hunters.GameState):
     agents = [PAC, GHOST0, GHOST1]
     observations = [OBS0, OBS1]
 
-    all_positions = []
-    for x in range(X_RANGE):
-        for y in range(Y_RANGE):
-            all_positions.append((x, y))
-
-    all_distances = []
-    for distance in range(X_RANGE + Y_RANGE + MAX_NOISE - 1):
-        all_distances.append(distance)
-
+    all_positions = [(x, y) for x in range(X_RANGE) for y in range(Y_RANGE)]
+    all_distances = list(range(X_RANGE + Y_RANGE + MAX_NOISE - 1))
+    
     for agent in agents:
         variableDomainsDict[agent] = all_positions
-
     for observation in observations:
         variableDomainsDict[observation] = all_distances
     "*** END YOUR CODE HERE ***"
