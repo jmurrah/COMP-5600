@@ -374,7 +374,9 @@ class DiscreteDistribution(dict):
         {}
         """
         "*** YOUR CODE HERE ***"
-        raiseNotDefined()
+        total = self.total()
+        for key, val in self.items():
+            self[key] = val / total
         "*** END YOUR CODE HERE ***"
 
     def sample(self):
@@ -399,7 +401,12 @@ class DiscreteDistribution(dict):
         0.0
         """
         "*** YOUR CODE HERE ***"
-        raiseNotDefined()
+        curr, total = 0, self.total()
+        random_threshold = random.uniform(0, total)
+        for key, val in self.items():
+            curr += val
+            if curr >= random_threshold:
+                return key
         "*** END YOUR CODE HERE ***"
 
 
