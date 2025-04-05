@@ -72,7 +72,7 @@ def constructBayesNet(gameState: hunters.GameState):
             all_positions.append((x, y))
 
     all_distances = []
-    for distance in range((X_RANGE - 1) + (Y_RANGE - 1) + MAX_NOISE + 1):
+    for distance in range(X_RANGE + Y_RANGE + MAX_NOISE - 1):
         all_distances.append(distance)
 
     for agent in agents:
