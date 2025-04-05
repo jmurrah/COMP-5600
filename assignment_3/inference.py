@@ -213,10 +213,8 @@ def inferenceByVariableEliminationWithCallTracking(callTrackingList=None):
             current_factors, joined_factor = joinFactorsByVariable(
                 current_factors, elim_var
             )
-            if not (
-                len(joined_factor.unconditionedVariables()) == 1
-                and elim_var in joined_factor.unconditionedVariables()
-            ):
+            unconditioned = joined_factor.unconditionedVariables()
+            if len(unconditioned) > 1 and elim_var in unconditioned:
                 current_factors.append(eliminate(joined_factor, elim_var))
 
         return normalize(joinFactors(current_factors))
