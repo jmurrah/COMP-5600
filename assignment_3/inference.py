@@ -72,6 +72,7 @@ def constructBayesNet(gameState: hunters.GameState):
 
     for agent in agents:
         variableDomainsDict[agent] = all_positions
+
     for observation in observations:
         variableDomainsDict[observation] = all_distances
     "*** END YOUR CODE HERE ***"
@@ -207,7 +208,18 @@ def inferenceByVariableEliminationWithCallTracking(callTrackingList=None):
             eliminationOrder = sorted(list(eliminationVariables))
 
         "*** YOUR CODE HERE ***"
-        raiseNotDefined()
+        current_factors = bayesNet.getAllCPTsWithEvidence(evidenceDict)
+        for elim_var in eliminationOrder:
+            current_factors, joined_factor = joinFactorsByVariable(
+                current_factors, elim_var
+            )
+            if not (
+                len(joined_factor.unconditionedVariables()) == 1
+                and elim_var in joined_factor.unconditionedVariables()
+            ):
+                current_factors.append(eliminate(joined_factor, elim_var))
+
+        return normalize(joinFactors(current_factors))
         "*** END YOUR CODE HERE ***"
 
     return inferenceByVariableElimination
