@@ -120,9 +120,6 @@ class ValueIterationAgent(ValueEstimationAgent):
         terminal state, you should return None.
         """
         "*** YOUR CODE HERE ***"
-        if self.mdp.isTerminal(state):
-            return None
-
         max_action = (None, float("-inf"))
         for action in self.mdp.getPossibleActions(state):
             value = 0
