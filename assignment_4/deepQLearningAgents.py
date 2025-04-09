@@ -7,8 +7,11 @@ import copy
 
 import numpy as np
 
+
 class PacmanDeepQAgent(PacmanQAgent):
-    def __init__(self, layout_input="smallGrid", target_update_rate=300, doubleQ=True, **args):
+    def __init__(
+        self, layout_input="smallGrid", target_update_rate=300, doubleQ=True, **args
+    ):
         PacmanQAgent.__init__(self, **args)
         self.model = None
         self.target_model = None
@@ -49,23 +52,25 @@ class PacmanDeepQAgent(PacmanQAgent):
         food_locations = np.array(state.getFood().data).astype(np.float32)
         for x, y in capsules:
             food_locations[x][y] = 2
-        return np.concatenate((pacman_state, ghost_state.flatten(), food_locations.flatten()))
+        return np.concatenate(
+            (pacman_state, ghost_state.flatten(), food_locations.flatten())
+        )
 
     def initialize_q_networks(self, state_dim, action_dim=5):
         import model
+
         self.model = model.DeepQNetwork(state_dim, action_dim)
         self.target_model = model.DeepQNetwork(state_dim, action_dim)
 
     def getQValue(self, state, action):
         """
-          Should return Q(state,action) as predicted by self.model
+        Should return Q(state,action) as predicted by self.model
         """
         feats = self.get_features(state)
         legalActions = self.getLegalActions(state)
         action_index = legalActions.index(action)
         state = nn.Constant(np.array([feats]).astype("float64"))
         return self.model.run(state).data[0][action_index]
-
 
     def shape_reward(self, reward):
         if reward > 100:
@@ -78,8 +83,9 @@ class PacmanDeepQAgent(PacmanQAgent):
             reward = -10
         return reward
 
-
-    def compute_q_targets(self, minibatch, network = None, target_network=None, doubleQ=False):
+    def compute_q_targets(
+        self, minibatch, network=None, target_network=None, doubleQ=False
+    ):
         """Prepare minibatches
         Args:
             minibatch (List[Transition]): Minibatch of `Transition`
@@ -106,13 +112,20 @@ class PacmanDeepQAgent(PacmanQAgent):
 
         replace_indices = np.arange(actions.shape[0])
         action_indices = np.argmax(network.run(next_states).data, axis=1)
-        target = rewards + exploration_bonus + (1 - done) * self.discount * target_network.run(next_states).data[replace_indices, action_indices]
+        target = (
+            rewards
+            + exploration_bonus
+            + (1 - done)
+            * self.discount
+            * target_network.run(next_states).data[replace_indices, action_indices]
+        )
 
         Q_target[replace_indices, actions] = target
 
         if self.td_error_clipping is not None:
             Q_target = Q_predict + np.clip(
-                     Q_target - Q_predict, -self.td_error_clipping, self.td_error_clipping)
+                Q_target - Q_predict, -self.td_error_clipping, self.td_error_clipping
+            )
 
         return Q_target
 
@@ -138,22 +151,32 @@ class PacmanDeepQAgent(PacmanQAgent):
         else:
             self.epsilon = max(self.epsilon0 * (1 - self.update_amount / 20000), 0)
 
-        if len(self.replay_memory) > self.min_transitions_before_training and self.update_amount % self.update_frequency == 0:
+        if (
+            len(self.replay_memory) > self.min_transitions_before_training
+            and self.update_amount % self.update_frequency == 0
+        ):
             minibatch = self.replay_memory.pop(self.model.batch_size)
             states = np.vstack([x.state for x in minibatch])
             states = nn.Constant(states.astype("float64"))
-            Q_target1 = self.compute_q_targets(minibatch, self.model, self.target_model, doubleQ=self.doubleQ)
+            Q_target1 = self.compute_q_targets(
+                minibatch, self.model, self.target_model, doubleQ=self.doubleQ
+            )
             Q_target1 = nn.Constant(Q_target1.astype("float64"))
 
             if self.doubleQ:
-                Q_target2 = self.compute_q_targets(minibatch, self.target_model, self.model, doubleQ=self.doubleQ)
+                Q_target2 = self.compute_q_targets(
+                    minibatch, self.target_model, self.model, doubleQ=self.doubleQ
+                )
                 Q_target2 = nn.Constant(Q_target2.astype("float64"))
-            
+
             self.model.gradient_update(states, Q_target1)
             if self.doubleQ:
                 self.target_model.gradient_update(states, Q_target2)
 
-        if self.target_update_rate > 0 and self.update_amount % self.target_update_rate == 0:
+        if (
+            self.target_update_rate > 0
+            and self.update_amount % self.target_update_rate == 0
+        ):
             self.target_model.set_weights(copy.deepcopy(self.model.parameters))
 
         self.update_amount += 1

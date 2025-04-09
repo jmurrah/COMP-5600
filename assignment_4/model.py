@@ -1,10 +1,12 @@
 import nn
 
-class DeepQNetwork():
+
+class DeepQNetwork:
     """
     A model that uses a Deep Q-value Network (DQN) to approximate Q(s,a) as part
     of reinforcement learning.
     """
+
     def __init__(self, state_dim, action_dim):
         self.num_actions = action_dim
         self.state_size = state_dim
@@ -20,7 +22,7 @@ class DeepQNetwork():
 
     def get_loss(self, states, Q_target):
         """
-        Returns the Squared Loss between Q values currently predicted 
+        Returns the Squared Loss between Q values currently predicted
         by the network, and Q_target.
         Inputs:
             states: a (batch_size x state_dim) numpy array

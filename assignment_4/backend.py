@@ -13,6 +13,7 @@ import numpy as np
 
 use_graphics = True
 
+
 def maybe_sleep_and_close(seconds):
     if use_graphics and plt.get_fignums():
         time.sleep(seconds)
@@ -25,31 +26,33 @@ def maybe_sleep_and_close(seconds):
             except:
                 pass
 
+
 # Stats should include all of the key quantities used for grading.
 # This backend file deals with all data loading / environment construction, so
 # once a function get_data_and_monitor_* returns the dataset might have been
 # thrown away even though the model still exists
 all_stats = weakref.WeakKeyDictionary()
 
+
 def get_stats(model):
     return all_stats.get(model, None)
+
 
 def set_stats(model, stats_dict):
     all_stats[model] = stats_dict
 
+
 def get_data_path(filename):
-    path = os.path.join(
-        os.path.dirname(__file__), os.pardir, "data", filename)
+    path = os.path.join(os.path.dirname(__file__), os.pardir, "data", filename)
     if not os.path.exists(path):
-        path = os.path.join(
-            os.path.dirname(__file__), "data", filename)
+        path = os.path.join(os.path.dirname(__file__), "data", filename)
     if not os.path.exists(path):
-        path = os.path.join(
-            os.path.dirname(__file__), filename)
+        path = os.path.join(os.path.dirname(__file__), filename)
     if not os.path.exists(path):
         raise Exception("Could not find data file: {}".format(filename))
 
     return path
+
 
 def make_get_data_and_monitor_perceptron():
     points = 500
@@ -64,7 +67,7 @@ def make_get_data_and_monitor_perceptron():
         ax.set_ylim(limits)
         positive = ax.scatter(*x[y == 1, :-1].T, color="red", marker="+")
         negative = ax.scatter(*x[y == -1, :-1].T, color="blue", marker="_")
-        line, = ax.plot([], [], color="black")
+        (line,) = ax.plot([], [], color="black")
         text = ax.text(0.03, 0.97, "", transform=ax.transAxes, va="top")
         ax.legend([positive, negative], [1, -1])
         plt.show(block=False)
@@ -73,8 +76,9 @@ def make_get_data_and_monitor_perceptron():
         w = perceptron.get_weights()
 
         if log:
-            print("epoch {:,} point {:,}/{:,} weights {}".format(
-                epoch, point, points, w))
+            print(
+                "epoch {:,} point {:,}/{:,} weights {}".format(epoch, point, points, w)
+            )
 
         if use_graphics:
             if w[1] != 0:
@@ -83,9 +87,12 @@ def make_get_data_and_monitor_perceptron():
                 line.set_data(np.full(2, -w[2] / w[0]), limits)
             else:
                 line.set_data([], [])
-            text.set_text("epoch: {:,}\npoint: {:,}/{:,}\nweights: {}\n"
-                          "showing every {:,} updates".format(
-                epoch, point, points, w, min(2 ** (epoch + 1), points)))
+            text.set_text(
+                "epoch: {:,}\npoint: {:,}/{:,}\nweights: {}\n"
+                "showing every {:,} updates".format(
+                    epoch, point, points, w, min(2 ** (epoch + 1), points)
+                )
+            )
             fig.canvas.draw_idle()
             fig.canvas.start_event_loop(1e-3)
 
@@ -104,9 +111,10 @@ def make_get_data_and_monitor_perceptron():
 
         set_stats(perceptron, stats)
         w = perceptron.get_weights()
-        stats['accuracy'] = np.mean(np.where(np.dot(x, w) >= 0, 1, -1) == y)
+        stats["accuracy"] = np.mean(np.where(np.dot(x, w) >= 0, 1, -1) == y)
 
     return get_data_and_monitor_perceptron
+
 
 def get_data_and_monitor_regression(model):
     stats = {}
@@ -122,8 +130,8 @@ def get_data_and_monitor_regression(model):
         fig, ax = plt.subplots(1, 1)
         ax.set_xlim(-2 * np.pi, 2 * np.pi)
         ax.set_ylim(-1.4, 1.4)
-        real, = ax.plot(x, y, color="blue")
-        learned, = ax.plot([], [], color="red")
+        (real,) = ax.plot(x, y, color="blue")
+        (learned,) = ax.plot([], [], color="red")
         text = ax.text(0.03, 0.97, "", transform=ax.transAxes, va="top")
         ax.legend([real, learned], ["real", "learned"])
         plt.show(block=False)
@@ -131,21 +139,21 @@ def get_data_and_monitor_regression(model):
     def monitor(iteration, log):
         predicted = model.run(x)
         loss = np.mean(np.square(predicted - y) / 2)
-        stats['loss'] = loss
+        stats["loss"] = loss
 
-        assert np.allclose(x, -x[::-1,:])
+        assert np.allclose(x, -x[::-1, :])
         asymmetry = np.abs(predicted + predicted[::-1])
-        stats['max_asymmetry'] = np.max(asymmetry)
-        stats['max_asymmetry_x'] = float(x[np.argmax(asymmetry)])
+        stats["max_asymmetry"] = np.max(asymmetry)
+        stats["max_asymmetry_x"] = float(x[np.argmax(asymmetry)])
 
         if log:
-            print("iteration {:,}/{:,} loss {:.6f}".format(
-                iteration, iterations, loss))
+            print("iteration {:,}/{:,} loss {:.6f}".format(iteration, iterations, loss))
 
         if use_graphics:
             learned.set_data(x, predicted)
-            text.set_text("iteration: {:,}/{:,}\nloss: {:.6f}".format(
-                iteration, iterations, loss))
+            text.set_text(
+                "iteration: {:,}/{:,}\nloss: {:.6f}".format(iteration, iterations, loss)
+            )
             fig.canvas.draw_idle()
             fig.canvas.start_event_loop(1e-3)
 
@@ -163,6 +171,7 @@ def get_data_and_monitor_regression(model):
             fig.canvas.start_event_loop(1e-3)
         except:
             pass
+
 
 def get_data_and_monitor_digit_classification(model):
     stats = {}
@@ -199,16 +208,21 @@ def get_data_and_monitor_digit_classification(model):
             ax[i].set_xlim(0, 28 * width)
             ax[i].set_ylim(0, 28)
             for j in range(samples):
-                images[i].append(ax[i].imshow(
-                    np.zeros((28, 28)), vmin=0, vmax=1, cmap="Greens", alpha=0.3))
-                texts[i].append(ax[i].text(
-                    0, 0, "", ha="center", va="top", fontsize="smaller"))
+                images[i].append(
+                    ax[i].imshow(
+                        np.zeros((28, 28)), vmin=0, vmax=1, cmap="Greens", alpha=0.3
+                    )
+                )
+                texts[i].append(
+                    ax[i].text(0, 0, "", ha="center", va="top", fontsize="smaller")
+                )
         ax[9].set_xticks(np.linspace(0, 28 * width, 11))
         ax[9].set_xticklabels(np.linspace(0, 1, 11))
         ax[9].tick_params(axis="x", pad=16)
         ax[9].set_xlabel("Probability of Correct Label")
         status = ax[0].text(
-            0.5, 1.5, "", transform=ax[0].transAxes, ha="center", va="bottom")
+            0.5, 1.5, "", transform=ax[0].transAxes, ha="center", va="bottom"
+        )
         plt.show(block=False)
 
     def softmax(x):
@@ -219,23 +233,30 @@ def get_data_and_monitor_digit_classification(model):
         dev_logits = model.run(dev_images)
         dev_predicted = np.argmax(dev_logits, axis=1)
         dev_accuracy = np.mean(dev_predicted == dev_labels)
-        stats['dev_accuracy'] = dev_accuracy
+        stats["dev_accuracy"] = dev_accuracy
 
         if log:
-            print("epoch {:.2f}/{:.2f} validation-accuracy {:.2%}".format(
-                epoch, epochs, dev_accuracy))
+            print(
+                "epoch {:.2f}/{:.2f} validation-accuracy {:.2%}".format(
+                    epoch, epochs, dev_accuracy
+                )
+            )
 
         if use_graphics:
-            status.set_text("epoch: {:.2f}/{:.2f}, validation-accuracy: {:.2%}".format(
-                epoch, epochs, dev_accuracy))
+            status.set_text(
+                "epoch: {:.2f}/{:.2f}, validation-accuracy: {:.2%}".format(
+                    epoch, epochs, dev_accuracy
+                )
+            )
             dev_probs = softmax(dev_logits)
             for i in range(10):
                 predicted = dev_predicted[dev_labels == i]
                 probs = dev_probs[dev_labels == i][:, i]
                 linspace = np.linspace(0, len(probs) - 1, samples).astype(int)
                 indices = probs.argsort()[linspace]
-                for j, (prob, image) in enumerate(zip(
-                        probs[indices], dev_images[dev_labels == i][indices])):
+                for j, (prob, image) in enumerate(
+                    zip(probs[indices], dev_images[dev_labels == i][indices])
+                ):
                     images[i][j].set_data(image.reshape((28, 28)))
                     left = prob * (width - 1) * 28
                     if predicted[indices[j]] == i:
@@ -251,8 +272,8 @@ def get_data_and_monitor_digit_classification(model):
 
     for epoch in range(epochs):
         for index in range(0, num_train, batch_size):
-            x = train_images[index:index + batch_size]
-            y = train_labels_one_hot[index:index + batch_size]
+            x = train_images[index : index + batch_size]
+            y = train_labels_one_hot[index : index + batch_size]
             yield x, y
             if index % 5000 == 0:
                 monitor(epoch + 1.0 * index / num_train, index % 15000 == 0)
@@ -267,6 +288,7 @@ def get_data_and_monitor_digit_classification(model):
         except:
             pass
 
+
 def get_data_and_monitor_lang_id(model):
     stats = {}
     set_stats(model, stats)
@@ -277,16 +299,16 @@ def get_data_and_monitor_lang_id(model):
     data_path = get_data_path("lang_id.npz")
 
     with np.load(data_path) as data:
-        chars = data['chars']
-        language_codes = data['language_codes']
-        language_names = data['language_names']
+        chars = data["chars"]
+        language_codes = data["language_codes"]
+        language_names = data["language_names"]
 
-        train_x = data['train_x']
-        train_y = data['train_y']
-        train_buckets = data['train_buckets']
-        dev_x = data['test_x']
-        dev_y = data['test_y']
-        dev_buckets = data['test_buckets']
+        train_x = data["train_x"]
+        train_y = data["train_y"]
+        train_buckets = data["train_buckets"]
+        dev_x = data["test_x"]
+        dev_y = data["test_y"]
+        dev_buckets = data["test_buckets"]
 
     chars_print = chars
     try:
@@ -295,16 +317,18 @@ def get_data_and_monitor_lang_id(model):
         chars_print = "abcdefghijklmnopqrstuvwxyzaaeeeeiinoouuacelnszz"
         print("Alphabet: " + chars_print)
         chars_print = list(chars_print)
-        print("""
+        print(
+            """
 NOTE: Your terminal does not appear to support printing Unicode characters.
 For the purposes of printing to the terminal, some of the letters in the
-alphabet above have been substituted with ASCII symbols.""".strip())
+alphabet above have been substituted with ASCII symbols.""".strip()
+        )
     print("")
 
     num_chars = len(chars)
     num_langs = len(language_names)
 
-    bucket_weights = train_buckets[:,1] - train_buckets[:,0]
+    bucket_weights = train_buckets[:, 1] - train_buckets[:, 0]
     bucket_weights = bucket_weights / float(bucket_weights.sum())
 
     # Select some examples to spotlight in the monitoring phase (3 per language)
@@ -318,7 +342,7 @@ alphabet above have been substituted with ASCII symbols.""".strip())
     def encode(inp_x, inp_y):
         xs = []
         for i in range(inp_x.shape[1]):
-            xs.append(np.eye(num_chars)[inp_x[:,i]])
+            xs.append(np.eye(num_chars)[inp_x[:, i]])
         y = np.eye(num_langs)[inp_y]
         return xs, y
 
@@ -326,14 +350,12 @@ alphabet above have been substituted with ASCII symbols.""".strip())
         max_word_len = dev_x.shape[1]
         max_lang_len = max([len(x) for x in language_names])
 
-        predicted_template = u"Pred: {:<NUM}".replace('NUM',
-            str(max_lang_len))
+        predicted_template = u"Pred: {:<NUM}".replace("NUM", str(max_lang_len))
 
         word_template = u"  "
-        word_template += u"{:<NUM} ".replace('NUM', str(max_word_len))
-        word_template += u"{:<NUM} ({:6.1%})".replace('NUM', str(max_lang_len))
-        word_template += u" {:<NUM} ".replace('NUM',
-            str(max_lang_len + len('Pred: ')))
+        word_template += u"{:<NUM} ".replace("NUM", str(max_word_len))
+        word_template += u"{:<NUM} ({:6.1%})".replace("NUM", str(max_lang_len))
+        word_template += u" {:<NUM} ".replace("NUM", str(max_lang_len + len("Pred: ")))
         for i in range(num_langs):
             word_template += u"|{}".format(language_codes[i])
             word_template += "{probs[" + str(i) + "]:4.0%}"
@@ -362,35 +384,38 @@ alphabet above have been substituted with ASCII symbols.""".strip())
         all_correct = np.asarray(all_correct)
 
         dev_accuracy = np.mean(all_predicted == all_correct)
-        stats['dev_accuracy'] = dev_accuracy
+        stats["dev_accuracy"] = dev_accuracy
 
-        print("iteration {:,} accuracy {:.1%}".format(
-            iteration, dev_accuracy))
+        print("iteration {:,} accuracy {:.1%}".format(iteration, dev_accuracy))
 
         for idx in spotlight_idxs:
-            correct = (all_predicted[idx] == all_correct[idx])
+            correct = all_predicted[idx] == all_correct[idx]
             word = u"".join([chars_print[ch] for ch in dev_x[idx] if ch != -1])
 
-            print(word_template.format(
-                word,
-                language_names[all_correct[idx]],
-                all_predicted_probs[idx, all_correct[idx]],
-                "" if correct else predicted_template.format(
-                    language_names[all_predicted[idx]]),
-                probs=all_predicted_probs[idx,:],
-            ))
+            print(
+                word_template.format(
+                    word,
+                    language_names[all_correct[idx]],
+                    all_predicted_probs[idx, all_correct[idx]],
+                    ""
+                    if correct
+                    else predicted_template.format(language_names[all_predicted[idx]]),
+                    probs=all_predicted_probs[idx, :],
+                )
+            )
         print("")
 
     for iteration in range(iterations + 1):
         # Sample a bucket
         bucket_id = np.random.choice(bucket_weights.shape[0], p=bucket_weights)
         example_ids = train_buckets[bucket_id, 0] + np.random.choice(
-            train_buckets[bucket_id, 1] - train_buckets[bucket_id, 0],
-            size=batch_size)
+            train_buckets[bucket_id, 1] - train_buckets[bucket_id, 0], size=batch_size
+        )
 
         yield encode(train_x[example_ids], train_y[example_ids])
         if iteration % 1000 == 0:
             monitor(iteration)
+
 
 # class CartPoleEnv(object):
 #     # https://github.com/openai/gym/blob/master/gym/envs/classic_control/cartpole.py
@@ -481,8 +506,10 @@ alphabet above have been substituted with ASCII symbols.""".strip())
 #
 #         return np.array(self.state), reward, done, {}
 
-Transition = namedtuple("Transition", field_names=[
-    "state", "action", "reward", "next_state", "done"])
+Transition = namedtuple(
+    "Transition", field_names=["state", "action", "reward", "next_state", "done"]
+)
+
 
 class ReplayMemory(object):
     def __init__(self, capacity):
@@ -521,15 +548,17 @@ class ReplayMemory(object):
         return random.sample(self.memory, batch_size)
 
     def __len__(self):
-        """Returns the length """
+        """Returns the length"""
         return len(self.memory)
+
 
 def get_data_and_monitor_online_rl(model, target_model, agent, env):
     import gridworld
+
     # Adapted from https://gist.github.com/kkweon/52ea1e118101eb574b2a83b933851379
     stats = {}
     # set_stats(model, stats)
-    stats['mean_reward'] = 0
+    stats["mean_reward"] = 0
 
     # Max size of the replay buffer
     capacity = 50000
@@ -555,7 +584,7 @@ def get_data_and_monitor_online_rl(model, target_model, agent, env):
 
     # Win if you average at least this much reward (max reward is 200) for
     # num_episodes_to_average consecutive episodes
-    reward_threshold = -20 # Cliff World
+    reward_threshold = -20  # Cliff World
     # reward_threshold = 0.8
     num_episodes_to_average = 10
 
@@ -567,7 +596,7 @@ def get_data_and_monitor_online_rl(model, target_model, agent, env):
 
     steps = 0
 
-    stats['reward_threshold'] = reward_threshold
+    stats["reward_threshold"] = reward_threshold
 
     # env = gridworld.GridworldEnvironment(gridworld.getCliffGrid())
     rewards = deque(maxlen=num_episodes_to_average)
@@ -590,12 +619,14 @@ def get_data_and_monitor_online_rl(model, target_model, agent, env):
         Q_predict = model.run(states)
         Q_target = np.copy(Q_predict)
         for s, state in enumerate(states):
-            target = rewards[s] + (1 - done[s]) * gamma * np.max(target_model.run(np.array([next_states[s]])), axis=1)
+            target = rewards[s] + (1 - done[s]) * gamma * np.max(
+                target_model.run(np.array([next_states[s]])), axis=1
+            )
             # if target > 10 and -1 not in next_states[s] :
-                # print("target model", np.max(target_model.run(np.array([next_states[s]])), axis=1))
-                # print("STEPS", steps)
-                # print("target", target)
-                # print(state, actions[s], rewards[s], next_states[s])
+            # print("target model", np.max(target_model.run(np.array([next_states[s]])), axis=1))
+            # print("STEPS", steps)
+            # print("target", target)
+            # print(state, actions[s], rewards[s], next_states[s])
             if -1 in next_states[s]:
                 target = [rewards[s] for _ in range(4)]
                 Q_target[s] = target
@@ -622,7 +653,9 @@ def get_data_and_monitor_online_rl(model, target_model, agent, env):
         done = False
         total_reward = 0
 
-        possible_action_list = env.gridWorld.get4Actions(s)#['north','west','south','east']
+        possible_action_list = env.gridWorld.get4Actions(
+            s
+        )  # ['north','west','south','east']
 
         while not done:
             a = agent.getAction(s)
@@ -630,14 +663,19 @@ def get_data_and_monitor_online_rl(model, target_model, agent, env):
             s2, r = env.doAction(a)
             steps += 1
 
-            done = env.gridWorld.isTerminal(s2) # deleted info
+            done = env.gridWorld.isTerminal(s2)  # deleted info
 
             total_reward += r
 
-            next_state = s2 if not done else (-1, -1) # define terminal state to be -1, -1
+            next_state = (
+                s2 if not done else (-1, -1)
+            )  # define terminal state to be -1, -1
             action_num = possible_action_list.index(a)
             reward = r if r is not None else 0
-            print("(s, action_num, reward, next_state, done)", (s, action_num, reward, next_state, done))
+            print(
+                "(s, action_num, reward, next_state, done)",
+                (s, action_num, reward, next_state, done),
+            )
             replay_memory.push(s, action_num, reward, next_state, done)
 
             if len(replay_memory) > batch_size and steps % 5 == 0:
@@ -656,27 +694,42 @@ def get_data_and_monitor_online_rl(model, target_model, agent, env):
 
         rewards.append(total_reward)
         if (episode + 1) % episode_print_interval == 0:
-            print("[Episode: {:3}] Reward: {:5} Mean Reward of last {} episodes: {:5.1f} epsilon: {:5.2f}".format(
-                episode + 1, total_reward, num_episodes_to_average, np.mean(rewards), eps))
+            print(
+                "[Episode: {:3}] Reward: {:5} Mean Reward of last {} episodes: {:5.1f} epsilon: {:5.2f}".format(
+                    episode + 1,
+                    total_reward,
+                    num_episodes_to_average,
+                    np.mean(rewards),
+                    eps,
+                )
+            )
 
         if len(rewards) == rewards.maxlen:
-            stats['mean_reward'] = np.mean(rewards)
+            stats["mean_reward"] = np.mean(rewards)
             if np.mean(rewards) >= reward_threshold:
-                print("Completed in {} episodes with mean reward {}".format(
-                    episode + 1, np.mean(rewards)))
-                stats['reward_threshold_met'] = True
+                print(
+                    "Completed in {} episodes with mean reward {}".format(
+                        episode + 1, np.mean(rewards)
+                    )
+                )
+                stats["reward_threshold_met"] = True
                 break
     else:
         # reward threshold not met
-        print("Aborted after {} episodes with mean reward {}".format(
-            episode + 1, np.mean(rewards)))
+        print(
+            "Aborted after {} episodes with mean reward {}".format(
+                episode + 1, np.mean(rewards)
+            )
+        )
+
 
 def get_data_and_monitor_offline_rl(model, target_model, agent, env):
     import gridworld
+
     # Adapted from https://gist.github.com/kkweon/52ea1e118101eb574b2a83b933851379
     stats = {}
     # set_stats(model, stats)
-    stats['mean_reward'] = 0
+    stats["mean_reward"] = 0
 
     # Max size of the replay buffer
     capacity = 50000
@@ -702,7 +755,7 @@ def get_data_and_monitor_offline_rl(model, target_model, agent, env):
 
     # Win if you average at least this much reward (max reward is 200) for
     # num_episodes_to_average consecutive episodes
-    reward_threshold = -20 # Cliff World
+    reward_threshold = -20  # Cliff World
     # reward_threshold = 0.8
     num_episodes_to_average = 10
 
@@ -714,7 +767,7 @@ def get_data_and_monitor_offline_rl(model, target_model, agent, env):
 
     steps = 0
 
-    stats['reward_threshold'] = reward_threshold
+    stats["reward_threshold"] = reward_threshold
 
     # env = gridworld.GridworldEnvironment(gridworld.getCliffGrid())
     rewards = deque(maxlen=num_episodes_to_average)
@@ -737,12 +790,14 @@ def get_data_and_monitor_offline_rl(model, target_model, agent, env):
         Q_predict = model.run(states)
         Q_target = np.copy(Q_predict)
         for s, state in enumerate(states):
-            target = rewards[s] + (1 - done[s]) * gamma * np.max(target_model.run(np.array([next_states[s]])), axis=1)
+            target = rewards[s] + (1 - done[s]) * gamma * np.max(
+                target_model.run(np.array([next_states[s]])), axis=1
+            )
             # if target > 10 and -1 not in next_states[s] :
-                # print("target model", np.max(target_model.run(np.array([next_states[s]])), axis=1))
-                # print("STEPS", steps)
-                # print("target", target)
-                # print(state, actions[s], rewards[s], next_states[s])
+            # print("target model", np.max(target_model.run(np.array([next_states[s]])), axis=1))
+            # print("STEPS", steps)
+            # print("target", target)
+            # print(state, actions[s], rewards[s], next_states[s])
             if -1 in next_states[s]:
                 target = [rewards[s] for _ in range(4)]
                 Q_target[s] = target
@@ -775,27 +830,29 @@ def get_data_and_monitor_offline_rl(model, target_model, agent, env):
         done = False
         total_reward = 0
 
-        possible_action_list = env.gridWorld.get4Actions(s)#['north','west','south','east']
+        possible_action_list = env.gridWorld.get4Actions(
+            s
+        )  # ['north','west','south','east']
 
         # while not done:
-            # random_num = np.random.rand()
-            # if random_num <= eps:
-            #     a = np.random.choice(possible_action_list)
-            # else:
-            #     a = model.get_action(s[np.newaxis,:], eps)[0]
+        # random_num = np.random.rand()
+        # if random_num <= eps:
+        #     a = np.random.choice(possible_action_list)
+        # else:
+        #     a = model.get_action(s[np.newaxis,:], eps)[0]
 
-            # s2, r = env.doAction(a)
-            # steps += 1
+        # s2, r = env.doAction(a)
+        # steps += 1
 
-            # done = env.gridWorld.isTerminal(s2) # deleted info
+        # done = env.gridWorld.isTerminal(s2) # deleted info
 
-            # total_reward += r
+        # total_reward += r
 
-            # next_state = s2 if not done else (-1, -1) # define terminal state to be -1, -1
-            # action_num = possible_action_list.index(a)
-            # reward = r if r is not None else 0
-            # print("(s, action_num, reward, next_state, done)", (s, action_num, reward, next_state, done))
-            # replay_memory.push(s, action_num, reward, next_state, done)
+        # next_state = s2 if not done else (-1, -1) # define terminal state to be -1, -1
+        # action_num = possible_action_list.index(a)
+        # reward = r if r is not None else 0
+        # print("(s, action_num, reward, next_state, done)", (s, action_num, reward, next_state, done))
+        # replay_memory.push(s, action_num, reward, next_state, done)
 
         steps += 1
         # print("steps", steps)
@@ -830,5 +887,8 @@ def get_data_and_monitor_offline_rl(model, target_model, agent, env):
         #         break
     else:
         # reward threshold not met
-        print("Aborted after {} episodes with mean reward {}".format(
-            episode + 1, np.mean(rewards)))
+        print(
+            "Aborted after {} episodes with mean reward {}".format(
+                episode + 1, np.mean(rewards)
+            )
+        )
