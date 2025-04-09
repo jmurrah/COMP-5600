@@ -995,7 +995,7 @@ class PacmanGraphics:
                     colors = GHOST_VEC_COLORS
                 for weight, gcolor in zip(weights, colors):
                     color = [
-                        min(1.0, c + 0.95 * g * weight**0.3)
+                        min(1.0, c + 0.95 * g * weight ** 0.3)
                         for c, g in zip(color, gcolor)
                     ]
                 changeColor(image, formatColor(*color))

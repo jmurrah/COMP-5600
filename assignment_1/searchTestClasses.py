@@ -178,7 +178,6 @@ def parseHeuristic(heuristicText):
 
 
 class GraphSearchTest(testClasses.TestCase):
-
     def __init__(self, question, testDict):
         super(GraphSearchTest, self).__init__(question, testDict)
         self.graph_text = testDict["graph"]
@@ -289,7 +288,6 @@ class GraphSearchTest(testClasses.TestCase):
 
 
 class PacmanSearchTest(testClasses.TestCase):
-
     def __init__(self, question, testDict):
         super(PacmanSearchTest, self).__init__(question, testDict)
         self.layout_text = testDict["layout"]
@@ -455,7 +453,6 @@ def getStatesFromPath(start, path):
 
 
 class CornerProblemTest(testClasses.TestCase):
-
     def __init__(self, question, testDict):
         super(CornerProblemTest, self).__init__(question, testDict)
         self.layoutText = testDict["layout"]
@@ -544,7 +541,6 @@ class CornerProblemTest(testClasses.TestCase):
 
 
 class HeuristicTest(testClasses.TestCase):
-
     def __init__(self, question, testDict):
         super(HeuristicTest, self).__init__(question, testDict)
         self.layoutText = testDict["layout"]
@@ -622,7 +618,6 @@ class HeuristicTest(testClasses.TestCase):
 
 
 class HeuristicGrade(testClasses.TestCase):
-
     def __init__(self, question, testDict):
         super(HeuristicGrade, self).__init__(question, testDict)
         self.layoutText = testDict["layout"]
@@ -696,7 +691,6 @@ class HeuristicGrade(testClasses.TestCase):
 
 
 class ClosestDotTest(testClasses.TestCase):
-
     def __init__(self, question, testDict):
         super(ClosestDotTest, self).__init__(question, testDict)
         self.layoutText = testDict["layout"]
@@ -754,7 +748,6 @@ class ClosestDotTest(testClasses.TestCase):
 
 
 class CornerHeuristicSanity(testClasses.TestCase):
-
     def __init__(self, question, testDict):
         super(CornerHeuristicSanity, self).__init__(question, testDict)
         self.layout_text = testDict["layout"]
@@ -822,7 +815,6 @@ class CornerHeuristicSanity(testClasses.TestCase):
 
 
 class CornerHeuristicPacman(testClasses.TestCase):
-
     def __init__(self, question, testDict):
         super(CornerHeuristicPacman, self).__init__(question, testDict)
         self.layout_text = testDict["layout"]

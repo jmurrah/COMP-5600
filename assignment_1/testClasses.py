@@ -22,7 +22,6 @@ import sys
 # maximum number of points they are worth, and are composed of a series of
 # test cases
 class Question(object):
-
     def raiseNotDefined(self):
         print("Method not implemented: %s" % inspect.stack()[1][3])
         sys.exit(1)
@@ -49,7 +48,6 @@ class Question(object):
 
 # Question in which all test cases must be passed in order to receive credit
 class PassAllTestsQuestion(Question):
-
     def execute(self, grades):
         # TODO: is this the right way to use grades?  The autograder doesn't seem to use it.
         testsFailed = False
@@ -85,7 +83,6 @@ class ExtraCreditPassAllTestsQuestion(Question):
 # Question in which predict credit is given for test cases with a ``points'' property.
 # All other tests are mandatory and must be passed.
 class HackedPartialCreditQuestion(Question):
-
     def execute(self, grades):
         # TODO: is this the right way to use grades?  The autograder doesn't seem to use it.
         grades.assignZeroCredit()
@@ -144,7 +141,6 @@ class NumberPassedQuestion(Question):
 
 # Template modeling a generic test case
 class TestCase(object):
-
     def raiseNotDefined(self):
         print("Method not implemented: %s" % inspect.stack()[1][3])
         sys.exit(1)

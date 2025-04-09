@@ -280,9 +280,11 @@ class GradingAgent(Agent):
 class PolyAgent(Agent):
     def __init__(self, seed, multiAgents, ourPacOptions, depth):
         # prepare our pacman agents
-        solutionAgents, alternativeDepthAgents, partialPlyBugAgents = (
-            self.construct_our_pacs(multiAgents, ourPacOptions)
-        )
+        (
+            solutionAgents,
+            alternativeDepthAgents,
+            partialPlyBugAgents,
+        ) = self.construct_our_pacs(multiAgents, ourPacOptions)
         for p in solutionAgents:
             p.depth = depth
         for p in partialPlyBugAgents:
@@ -371,7 +373,6 @@ class PolyAgent(Agent):
 
 
 class PacmanGameTreeTest(testClasses.TestCase):
-
     def __init__(self, question, testDict):
         super(PacmanGameTreeTest, self).__init__(question, testDict)
         self.seed = int(self.testDict["seed"])
@@ -476,7 +477,6 @@ class PacmanGameTreeTest(testClasses.TestCase):
 
 
 class GraphGameTreeTest(testClasses.TestCase):
-
     def __init__(self, question, testDict):
         super(GraphGameTreeTest, self).__init__(question, testDict)
         self.problem = parseTreeProblem(testDict)
@@ -539,7 +539,6 @@ from util import TimeoutFunction
 
 
 class EvalAgentTest(testClasses.TestCase):
-
     def __init__(self, question, testDict):
         super(EvalAgentTest, self).__init__(question, testDict)
         self.layoutName = testDict["layoutName"]

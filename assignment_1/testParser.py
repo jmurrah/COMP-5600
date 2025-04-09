@@ -17,7 +17,6 @@ import sys
 
 
 class TestParser(object):
-
     def __init__(self, path):
         # save the path to the test file
         self.path = path
