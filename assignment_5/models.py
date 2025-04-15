@@ -192,9 +192,9 @@ class DigitClassificationModel(Module):
         self.batch_size = 98
         self.epochs = 1000
 
-        self.layer1 = Linear(784, 256)
+        self.layer1 = Linear(input_size, 256)
         self.layer2 = Linear(256, 128)
-        self.output = Linear(128, 10)
+        self.output = Linear(128, output_size)
 
     def run(self, x):
         """
@@ -385,7 +385,14 @@ def Convolve(input: tensor, weight: tensor):
     weight_dimensions = weight.shape
     Output_Tensor = tensor(())
     "*** YOUR CODE HERE ***"
+    width = input_tensor_dimensions[1] - weight_dimensions[1] + 1
+    height = input_tensor_dimensions[0] - weight_dimensions[0] + 1
 
+    Output_Tensor = torch.zeros((height, width))
+    for x in range(width):
+        for y in range(height):
+            w = input[y : y + weight_dimensions[0], x : x + weight_dimensions[1]]
+            Output_Tensor[y, x] = tensordot(w, weight, dims=2)
     "*** End Code ***"
     return Output_Tensor
 
@@ -409,6 +416,15 @@ class DigitConvolutionalModel(Module):
 
         self.convolution_weights = Parameter(ones((3, 3)))
         """ YOUR CODE HERE """
+        input_size = 26 * 26
+
+        self.lr = 0.001
+        self.batch_size = 64
+        self.epochs = 1000
+
+        self.layer1 = Linear(input_size, 256)
+        self.layer2 = Linear(256, 128)
+        self.output = Linear(128, output_size)
 
     def run(self, x):
         return self(x)
@@ -424,6 +440,9 @@ class DigitConvolutionalModel(Module):
         )
         x = x.flatten(start_dim=1)
         """ YOUR CODE HERE """
+        x = relu(self.layer1(x))
+        x = relu(self.layer2(x))
+        return self.output(x)
 
     def get_loss(self, x, y):
         """
@@ -439,12 +458,27 @@ class DigitConvolutionalModel(Module):
         Returns: a loss tensor
         """
         """ YOUR CODE HERE """
+        return cross_entropy(self.run(x), y)
 
     def train(self, dataset):
         """
         Trains the model.
         """
         """ YOUR CODE HERE """
+        dataloader = DataLoader(dataset, batch_size=self.batch_size, shuffle=True)
+        optimizer = optim.Adam(self.parameters(), lr=self.lr)
+
+        for _ in range(self.epochs):
+            for batch in dataloader:
+                x, y = batch["x"], batch["label"]
+                loss = self.get_loss(x, y)
+
+                optimizer.zero_grad()
+                loss.backward()
+                optimizer.step()
+
+            if dataset.get_validation_accuracy() > 0.81:
+                break
 
 
 class Attention(Module):
@@ -486,3 +520,13 @@ class Attention(Module):
         B, T, C = input.size()
 
         """YOUR CODE HERE"""
+        q = self.q_layer(input)
+        k = self.k_layer(input)
+        v = self.v_layer(input)
+
+        qm = torch.movedim(q, 1, 2)
+        scores = ((k @ qm) / (C**0.5)).masked_fill(
+            self.mask[:, :, :T, :T] == 0, float("-inf")
+        )[0]
+
+        return softmax(scores, dim=-1) @ v
