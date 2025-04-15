@@ -270,6 +270,14 @@ class LanguageIDModel(Module):
         self.languages = ["English", "Spanish", "Finnish", "Dutch", "Polish"]
         super(LanguageIDModel, self).__init__()
         "*** YOUR CODE HERE ***"
+        self.lr = 0.001
+        self.batch_size = 64
+        self.epochs = 1000
+        self.hidden_size = 256
+
+        self.layer1 = Linear(self.num_chars, self.hidden_size)
+        self.layer2 = Linear(self.hidden_size * 2, self.hidden_size)
+        self.output = Linear(self.hidden_size, len(self.languages))
 
     def run(self, xs):
         """
@@ -301,6 +309,13 @@ class LanguageIDModel(Module):
                 (also called logits)
         """
         "*** YOUR CODE HERE ***"
+        batch_size = xs[0].shape[0]
+        h = torch.zeros(batch_size, self.hidden_size)
+        for x in xs:
+            x = relu(self.layer1(x))
+            h = relu(self.layer2(torch.cat([h, x], dim=1)))
+
+        return self.output(h)
 
     def get_loss(self, xs, y):
         """
@@ -317,6 +332,7 @@ class LanguageIDModel(Module):
         Returns: a loss node
         """
         "*** YOUR CODE HERE ***"
+        return cross_entropy(self.run(xs), y)
 
     def train(self, dataset):
         """
@@ -333,6 +349,23 @@ class LanguageIDModel(Module):
         For more information, look at the pytorch documentation of torch.movedim()
         """
         "*** YOUR CODE HERE ***"
+        dataloader = DataLoader(dataset, batch_size=self.batch_size, shuffle=True)
+        optimizer = optim.Adam(self.parameters(), lr=self.lr)
+
+        for _ in range(self.epochs):
+            for batch in dataloader:
+                x, y = batch["x"], batch["label"]
+                xt = movedim(x, 0, 1)
+                xs = [xt[i] for i in range(xt.shape[0])]
+
+                loss = self.get_loss(xs, y)
+
+                optimizer.zero_grad()
+                loss.backward()
+                optimizer.step()
+
+            if dataset.get_validation_accuracy() > 0.82:
+                break
 
 
 def Convolve(input: tensor, weight: tensor):
