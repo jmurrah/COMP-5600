@@ -160,7 +160,7 @@ class RegressionModel(Module):
         for _ in range(self.epochs):
             for batch in dataloader:
                 x, y = batch["x"], batch["label"]
-                loss = mse_loss(self.forward(x), y)
+                loss = self.get_loss(x, y)
 
                 optimizer.zero_grad()
                 loss.backward()
@@ -188,6 +188,13 @@ class DigitClassificationModel(Module):
         input_size = 28 * 28
         output_size = 10
         "*** YOUR CODE HERE ***"
+        self.lr = 0.001
+        self.batch_size = 98
+        self.epochs = 1000
+
+        self.layer1 = Linear(784, 256)
+        self.layer2 = Linear(256, 128)
+        self.output = Linear(128, 10)
 
     def run(self, x):
         """
@@ -204,6 +211,9 @@ class DigitClassificationModel(Module):
                 (also called logits)
         """
         """ YOUR CODE HERE """
+        x = relu(self.layer1(x))
+        x = relu(self.layer2(x))
+        return self.output(x)
 
     def get_loss(self, x, y):
         """
@@ -219,12 +229,27 @@ class DigitClassificationModel(Module):
         Returns: a loss tensor
         """
         """ YOUR CODE HERE """
+        return cross_entropy(self.run(x), y)
 
     def train(self, dataset):
         """
         Trains the model.
         """
         """ YOUR CODE HERE """
+        dataloader = DataLoader(dataset, batch_size=self.batch_size, shuffle=True)
+        optimizer = optim.Adam(self.parameters(), lr=self.lr)
+
+        for _ in range(self.epochs):
+            for batch in dataloader:
+                x, y = batch["x"], batch["label"]
+                loss = self.get_loss(x, y)
+
+                optimizer.zero_grad()
+                loss.backward()
+                optimizer.step()
+
+            if dataset.get_validation_accuracy() > 0.98:
+                break
 
 
 class LanguageIDModel(Module):
