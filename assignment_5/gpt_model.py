@@ -13,7 +13,6 @@ https://github.com/openai/gpt-2/blob/master/src/model.py
 https://github.com/huggingface/transformers/blob/main/src/transformers/models/gpt2/modeling_gpt2.py
 """
 
-
 import torch
 import torch.nn as nn
 from torch.nn import functional as F
@@ -24,6 +23,7 @@ class Transformer_Block(nn.Module):
     """
     This class builds the basic transformer block.
     """
+
     def __init__(self, n_embd, block_size):
         super().__init__()
 
@@ -32,30 +32,31 @@ class Transformer_Block(nn.Module):
         self.linear_1 = nn.Linear(n_embd, n_embd)
         self.norm_2 = nn.LayerNorm(n_embd)
 
-
     def forward(self, x):
         """YOUR CODE HERE"""
 
-       
 
 class Character_GPT(nn.Module):
-   
+
     def __init__(self, block_size, n_embd, n_layer, vocab_size):
         super().__init__()
         self.block_size = block_size
-        self.embed = nn.Embedding(vocab_size, n_embd) #Embedding layer, think of this as similar to a linear layer
+        self.embed = nn.Embedding(
+            vocab_size, n_embd
+        )  # Embedding layer, think of this as similar to a linear layer
 
-        
-        self.transformer_blocks = nn.ModuleList([Transformer_Block(n_embd, block_size) for _ in range(n_layer)]) #You can treat this as a python list
-        self.norm = nn.LayerNorm(n_embd) #Normalization Layer
+        self.transformer_blocks = nn.ModuleList(
+            [Transformer_Block(n_embd, block_size) for _ in range(n_layer)]
+        )  # You can treat this as a python list
+        self.norm = nn.LayerNorm(n_embd)  # Normalization Layer
         self.output_layer = nn.Linear(n_embd, vocab_size, bias=False)
-
-
 
     def get_loss(self, input, target):
         output = self(input)
-        return F.cross_entropy(output.view(-1, output.size(-1)), target.view(-1), ignore_index=-1)
-        
+        return F.cross_entropy(
+            output.view(-1, output.size(-1)), target.view(-1), ignore_index=-1
+        )
+
     def forward(self, input):
         """
         This function should take in an input representing a sequence of characters, and output
@@ -66,10 +67,11 @@ class Character_GPT(nn.Module):
         final model, you will have to pass the input through every object in this list.
         """
         b, t = input.size()
-        assert t <= self.block_size, f"Cannot forward sequence of length {t}, block size is only {self.block_size}"
+        assert (
+            t <= self.block_size
+        ), f"Cannot forward sequence of length {t}, block size is only {self.block_size}"
 
         """YOUR CODE HERE"""
-
 
     @torch.no_grad()
     def generate(self, idx, max_new_tokens):
@@ -79,7 +81,9 @@ class Character_GPT(nn.Module):
         """
         for _ in range(max_new_tokens):
             # if the sequence context is growing too long we must crop it at block_size
-            idx_cond = idx if idx.size(1) <= self.block_size else idx[:, -self.block_size:]
+            idx_cond = (
+                idx if idx.size(1) <= self.block_size else idx[:, -self.block_size :]
+            )
             # forward the model to get the logits for the index in the sequence
             logits = self(idx_cond)
             # pluck the logits at the final step and scale by desired temperature
@@ -89,9 +93,9 @@ class Character_GPT(nn.Module):
             # apply softmax to convert logits to (normalized) probabilities
             probs = F.softmax(logits, dim=-1)
             # either sample from the distribution or take the most likely element
-            
+
             idx_next = torch.multinomial(probs, num_samples=1)
-            
+
             # append sampled index to the running sequence and continue
             idx = torch.cat((idx, idx_next), dim=1)
 

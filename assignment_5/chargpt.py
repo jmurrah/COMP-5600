@@ -7,7 +7,6 @@ The above copyright notice and this permission notice shall be included in all c
 Modified version of Andrej Karpathy's "mingpt" repo found here: https://github.com/karpathy/minGPT
 """
 
-
 import torch
 from torch.utils.data import Dataset
 from torch.utils.data.dataloader import DataLoader
@@ -15,16 +14,15 @@ from torch.utils.data.dataloader import DataLoader
 from gpt_model import Character_GPT
 
 
-
 class CharDataset(Dataset):
     def __init__(self, data):
-        #Configure block size
+        # Configure block size
         self.block_size = 10
 
-        #Define possible characters, and create mapping from number to character
+        # Define possible characters, and create mapping from number to character
         chars = sorted(list(set(data)))
-        self.index2char = { i:ch for i,ch in enumerate(chars) }
-        self.char2index = { ch:i for i,ch in enumerate(chars) }
+        self.index2char = {i: ch for i, ch in enumerate(chars)}
+        self.char2index = {ch: i for i, ch in enumerate(chars)}
         vocab_size = len(chars)
         self.vocab_size = vocab_size
         self.data = data
@@ -34,14 +32,13 @@ class CharDataset(Dataset):
 
     def __getitem__(self, idx):
         # grab a chunk of (block_size + 1) characters from the data
-        chunk = self.data[idx:idx + self.block_size + 1]
+        chunk = self.data[idx : idx + self.block_size + 1]
         # encode every character to an integer
         dix = [self.char2index[s] for s in chunk]
         # return as tensors
         x = torch.tensor(dix[:-1], dtype=torch.long)
-        y = torch.tensor(dix[1:],dtype=torch.long)
+        y = torch.tensor(dix[1:], dtype=torch.long)
         return x, y
-
 
 
 def train_single_iteration(model, data_iter):
@@ -59,29 +56,30 @@ def train_single_iteration(model, data_iter):
     # backprop and update the parameters
     model.zero_grad(set_to_none=True)
     loss.backward()
-   
+
     optimizer.step()
 
- 
-if __name__ == '__main__':
-    #Variables to configure
+
+if __name__ == "__main__":
+    # Variables to configure
     learning_rate = 0.0004
     num_iterations = 10000
-    batch_size = 500 
-    checkpoint = 100 #How often to print out results of the model during training
-    context = "Pacman" #Generative prompt
+    batch_size = 500
+    checkpoint = 100  # How often to print out results of the model during training
+    context = "Pacman"  # Generative prompt
     layer_size = 100
-    n_layer = 6 #How many transformer blocks to have
-
+    n_layer = 6  # How many transformer blocks to have
 
     # construct the training dataset
-    text = open('input.txt', 'r').read() 
+    text = open("input.txt", "r").read()
     train_dataset = CharDataset(text)
 
     # setup the dataloader
     train_loader = DataLoader(
         train_dataset,
-        sampler=torch.utils.data.RandomSampler(train_dataset, replacement=True, num_samples=int(1e10)),
+        sampler=torch.utils.data.RandomSampler(
+            train_dataset, replacement=True, num_samples=int(1e10)
+        ),
         shuffle=False,
         pin_memory=True,
         batch_size=batch_size,
@@ -90,23 +88,28 @@ if __name__ == '__main__':
 
     train_iterations = iter(train_loader)
 
-    #set up model and optimizer
-    model = Character_GPT(train_dataset.block_size, n_embd=layer_size, n_layer=n_layer, vocab_size=train_dataset.vocab_size)
+    # set up model and optimizer
+    model = Character_GPT(
+        train_dataset.block_size,
+        n_embd=layer_size,
+        n_layer=n_layer,
+        vocab_size=train_dataset.vocab_size,
+    )
     optimizer = torch.optim.Adam(model.parameters(), lr=0.00004)
-
 
     for i in range(num_iterations):
         train_single_iteration(model, train_iterations)
-        
+
         if i % checkpoint == 0:
             with torch.no_grad():
                 print("Iteration: " + str(i) + "\n")
-                
+
                 # sample from the model...
                 print("Prompt: " + context)
                 print("Generated result: ")
-                x = torch.tensor([train_dataset.char2index[s] for s in context])[None,...]
+                x = torch.tensor([train_dataset.char2index[s] for s in context])[
+                    None, ...
+                ]
                 y = model.generate(x, 500)[0]
-                completion = ''.join([train_dataset.index2char[int(i)] for i in y])
+                completion = "".join([train_dataset.index2char[int(i)] for i in y])
                 print(completion + "\n")
-   
