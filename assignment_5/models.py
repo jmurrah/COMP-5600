@@ -83,11 +83,9 @@ class PerceptronModel(Module):
             while True:
                 perfect = True
                 for batch in dataloader:
-                    x, label = batch["x"], batch["label"].item()
-                    predicted = self.get_prediction(x)
-
-                    if predicted != label:
-                        self.w += x * label
+                    x, y = batch["x"], batch["label"].item()
+                    if self.get_prediction(x) != y:
+                        self.w += x * y
                         perfect = False
 
                 if perfect:
@@ -106,6 +104,14 @@ class RegressionModel(Module):
         "*** YOUR CODE HERE ***"
         super().__init__()
 
+        self.lr = 0.001
+        self.batch_size = 64
+        self.epochs = 1000
+
+        self.layer1 = Linear(1, 256)
+        self.layer2 = Linear(256, 128)
+        self.output = Linear(128, 1)
+
     def forward(self, x):
         """
         Runs the model for a batch of examples.
@@ -116,6 +122,9 @@ class RegressionModel(Module):
             A node with shape (batch_size x 1) containing predicted y-values
         """
         "*** YOUR CODE HERE ***"
+        x = relu(self.layer1(x))
+        x = relu(self.layer2(x))
+        return self.output(x)
 
     def get_loss(self, x, y):
         """
@@ -128,6 +137,7 @@ class RegressionModel(Module):
         Returns: a tensor of size 1 containing the loss
         """
         "*** YOUR CODE HERE ***"
+        return mse_loss(self.forward(x), y)
 
     def train(self, dataset):
         """
@@ -144,6 +154,17 @@ class RegressionModel(Module):
 
         """
         "*** YOUR CODE HERE ***"
+        dataloader = DataLoader(dataset, batch_size=self.batch_size, shuffle=True)
+        optimizer = optim.Adam(self.parameters(), lr=self.lr)
+
+        for _ in range(self.epochs):
+            for batch in dataloader:
+                x, y = batch["x"], batch["label"]
+                loss = mse_loss(self.forward(x), y)
+
+                optimizer.zero_grad()
+                loss.backward()
+                optimizer.step()
 
 
 class DigitClassificationModel(Module):
