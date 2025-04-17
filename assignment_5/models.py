@@ -278,7 +278,7 @@ class LanguageIDModel(Module):
         self.hidden_size = 256
 
         self.layer1 = Linear(self.num_chars, self.hidden_size)
-        self.layer2 = Linear(self.hidden_size + self.hidden_size, self.hidden_size)
+        self.layer2 = Linear(self.hidden_size * 2, self.hidden_size)
         self.output = Linear(self.hidden_size, len(self.languages))
 
     def run(self, xs):
