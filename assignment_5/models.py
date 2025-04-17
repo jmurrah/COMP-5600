@@ -57,7 +57,7 @@ class PerceptronModel(Module):
         The pytorch function `tensordot` may be helpful here.
         """
         "*** YOUR CODE HERE ***"
-        return torch.matmul(self.w, x.t())
+        return torch.tensordot(x, self.w, dims=([1], [1]))
 
     def get_prediction(self, x):
         """
