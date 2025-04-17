@@ -105,7 +105,7 @@ class RegressionModel(Module):
         super().__init__()
 
         self.lr = 0.001
-        self.batch_size = 64
+        self.batch_size = 50
         self.epochs = 1000
 
         self.layer1 = Linear(1, 256)
@@ -154,6 +154,7 @@ class RegressionModel(Module):
 
         """
         "*** YOUR CODE HERE ***"
+        print(f"Dataset Size: {len(dataset)}")
         dataloader = DataLoader(dataset, batch_size=self.batch_size, shuffle=True)
         optimizer = optim.Adam(self.parameters(), lr=self.lr)
 
@@ -189,7 +190,7 @@ class DigitClassificationModel(Module):
         output_size = 10
         "*** YOUR CODE HERE ***"
         self.lr = 0.001
-        self.batch_size = 98
+        self.batch_size = 100
         self.epochs = 1000
 
         self.layer1 = Linear(input_size, 256)
@@ -236,6 +237,7 @@ class DigitClassificationModel(Module):
         Trains the model.
         """
         """ YOUR CODE HERE """
+        print(f"Dataset Size: {len(dataset)}")
         dataloader = DataLoader(dataset, batch_size=self.batch_size, shuffle=True)
         optimizer = optim.Adam(self.parameters(), lr=self.lr)
 
